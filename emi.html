@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EMI Calculator | FinCalc Pro</title>
+    <meta name="description" content="Calculate your Equated Monthly Installments (EMI) for loans with our easy-to-use EMI calculator. Plan your home loan, car loan, or personal loan payments.">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Styles -->
     <style>
         /* Base Styles */
         :root {
@@ -11,31 +26,44 @@
             --primary-light: #8A96F8;
             --primary-dark: #4A5AE9;
             --secondary: #FF7E33;
+            --secondary-light: #FF9A5C;
+            --secondary-dark: #F26B1D;
             --success: #4DCA79;
+            --success-light: #6EDB94;
             --error: #FF4D4D;
+            --warning: #FFB84D;
             --text: #1A1D27;
             --text-light: #5A5E6B;
+            --text-lighter: #8E92A3;
             --bg: #F8FAFF;
             --bg-dark: #E6E9F4;
             --card-bg: rgba(255, 255, 255, 0.85);
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            --border: rgba(0, 0, 0, 0.1);
             --border-radius: 12px;
+            --border-radius-sm: 8px;
             --transition: all 0.3s ease;
         }
 
         [data-theme="dark"] {
             --text: #F0F2FF;
             --text-light: #B8BBD1;
+            --text-lighter: #8E92A3;
             --bg: #12141D;
             --bg-dark: #1A1D27;
             --card-bg: rgba(26, 29, 39, 0.85);
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -46,11 +74,123 @@
             overflow-x: hidden;
         }
 
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background: linear-gradient(
+                135deg, 
+                rgba(95, 111, 246, 0.05) 0%, 
+                rgba(255, 126, 51, 0.05) 50%, 
+                rgba(77, 202, 121, 0.05) 100%
+            );
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradientShift {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 12px rgba(95, 111, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(95, 111, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-lighter);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
         }
 
         /* Header */
@@ -62,9 +202,21 @@
             padding: 1rem 0;
             background: var(--card-bg);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
+        }
+
+        .header.scrolled {
+            padding: 0.75rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .logo {
@@ -79,23 +231,177 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             background: var(--primary);
             color: white;
             border-radius: 8px;
             margin-right: 0.5rem;
             font-weight: 700;
+            font-size: 0.9rem;
         }
 
-        /* Main Content */
-        .main {
+        .logo-highlight {
+            color: var(--primary);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            color: var(--text-light);
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: rgba(95, 111, 246, 0.1);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text);
+            position: relative;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background: var(--text);
+            left: 0;
+            transition: var(--transition);
+        }
+
+        .hamburger::before {
+            top: -6px;
+        }
+
+        .hamburger::after {
+            top: 6px;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            border-radius: 50px;
+            background: var(--bg-dark);
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            position: absolute;
+            top: 2px;
+        }
+
+        .theme-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .theme-icon.sun {
+            left: 2px;
+            opacity: 1;
+        }
+
+        .theme-icon.moon {
+            right: 2px;
+            opacity: 0;
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: var(--text-lighter);
+        }
+
+        [data-theme="dark"] .theme-icon.sun {
+            opacity: 0;
+            left: 26px;
+        }
+
+        [data-theme="dark"] .theme-icon.moon {
+            opacity: 1;
+            right: 26px;
+        }
+
+        [data-theme="dark"] .theme-icon svg {
+            fill: var(--bg-dark);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Theme transition */
+        html.theme-transition,
+        html.theme-transition *,
+        html.theme-transition *:before,
+        html.theme-transition *:after {
+            transition: all 0.3s ease !important;
+            transition-delay: 0 !important;
+        }
+
+        /* Hero Section */
+        .emi-hero {
             padding: 8rem 0 4rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .page-title {
+        .emi-hero .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .emi-hero-title {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             background-clip: text;
@@ -103,32 +409,54 @@
             animation: fadeInUp 0.8s ease;
         }
 
-        .page-subtitle {
+        .emi-hero-subtitle {
+            font-size: 1.25rem;
             color: var(--text-light);
             margin-bottom: 2rem;
+            max-width: 700px;
             animation: fadeInUp 0.8s ease 0.2s forwards;
             opacity: 0;
         }
 
-        /* Calculator Section */
-        .calculator-container {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* EMI Calculator Section */
+        .emi-calculator-section {
+            padding: 4rem 0;
+        }
+
+        .emi-calculator-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            margin-top: 2rem;
         }
 
-        .calculator-form {
+        .emi-form-container {
             background: var(--card-bg);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-radius: var(--border-radius);
             padding: 2rem;
             box-shadow: var(--card-shadow);
+            border: 1px solid var(--border);
             transition: var(--transition);
-            animation: fadeInLeft 0.8s ease;
         }
 
-        .calculator-form:hover {
+        .emi-form-container:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
         }
@@ -144,21 +472,22 @@
             color: var(--text-light);
         }
 
-        .form-control {
+        .form-input {
             width: 100%;
             padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius-sm);
             background: var(--bg-dark);
             color: var(--text);
+            font-family: 'Poppins', sans-serif;
             font-size: 1rem;
             transition: var(--transition);
         }
 
-        .form-control:focus {
+        .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(95, 111, 246, 0.2);
+            box-shadow: 0 0 0 3px rgba(95, 111, 246, 0.2);
         }
 
         .range-slider {
@@ -166,183 +495,244 @@
             margin-top: 0.5rem;
         }
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: var(--transition);
-            border: none;
+        .range-slider input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .range-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
             cursor: pointer;
+            transition: var(--transition);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            box-shadow: 0 4px 12px rgba(95, 111, 246, 0.2);
+        .range-slider input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(95, 111, 246, 0.3);
-        }
-
-        /* Results Section */
-        .results-container {
+        .emi-results-container {
             background: var(--card-bg);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-radius: var(--border-radius);
             padding: 2rem;
             box-shadow: var(--card-shadow);
+            border: 1px solid var(--border);
             transition: var(--transition);
-            animation: fadeInRight 0.8s ease;
         }
 
-        .results-container:hover {
+        .emi-results-container:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
         }
 
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--bg-dark);
+        .emi-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .result-label {
+        .emi-summary-item {
+            background: var(--bg-dark);
+            border-radius: var(--border-radius-sm);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .emi-summary-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .emi-summary-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .emi-summary-label {
+            font-size: 0.875rem;
             color: var(--text-light);
         }
 
-        .result-value {
-            font-weight: 600;
-            color: var(--primary);
+        .emi-chart-container {
+            height: 250px;
+            margin-bottom: 2rem;
+            position: relative;
         }
 
-        .emi-amount {
-            font-size: 2rem;
-            text-align: center;
-            margin: 2rem 0;
-            color: var(--primary);
-        }
-
-        /* Chart Section */
-        .chart-container {
-            grid-column: 1 / -1;
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--card-shadow);
-            margin-top: 2rem;
-            animation: fadeInUp 0.8s ease 0.4s forwards;
-            opacity: 0;
-        }
-
-        .chart-title {
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        #emiChart {
-            width: 100%;
-            height: 400px;
-            margin-top: 1rem;
-        }
-
-        /* Breakdown Section */
-        .breakdown-container {
-            grid-column: 1 / -1;
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--card-shadow);
-            margin-top: 2rem;
-            animation: fadeInUp 0.8s ease 0.6s forwards;
-            opacity: 0;
-        }
-
-        .breakdown-title {
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .table-container {
+        .emi-table-container {
             overflow-x: auto;
         }
 
-        .breakdown-table {
+        .emi-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .breakdown-table th,
-        .breakdown-table td {
-            padding: 0.75rem 1rem;
+        .emi-table th, .emi-table td {
+            padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid var(--bg-dark);
+            border-bottom: 1px solid var(--border);
         }
 
-        .breakdown-table th {
+        .emi-table th {
+            font-weight: 600;
             color: var(--text-light);
-            font-weight: 500;
+            font-size: 0.875rem;
+            text-transform: uppercase;
         }
 
-        .breakdown-table tr:hover {
-            background-color: var(--bg-dark);
+        .emi-table tbody tr:last-child td {
+            border-bottom: none;
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .emi-table tbody tr:hover {
+            background: rgba(95, 111, 246, 0.05);
         }
 
-        @keyframes fadeInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        /* EMI Schedule Section */
+        .emi-schedule-section {
+            padding: 4rem 0;
         }
 
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            margin: 1rem auto;
+            border-radius: 2px;
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
-            .calculator-container {
+        @media (max-width: 1024px) {
+            .emi-calculator-container {
                 grid-template-columns: 1fr;
             }
+        }
+
+        @media (max-width: 768px) {
+            .emi-hero {
+                padding: 7rem 0 3rem;
+            }
             
-            .page-title {
+            .emi-hero-title {
+                font-size: 2.25rem;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: var(--card-bg);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                transform: translateY(-150%);
+                transition: var(--transition);
+                z-index: 999;
+            }
+        
+            .nav-menu.active {
+                transform: translateY(0);
+            }
+            
+            .nav-link {
+                display: block;
+                padding: 1rem;
+            }
+            
+            .nav-toggle {
+                display: block;
+            }
+            
+            .nav-toggle.active .hamburger {
+                background: transparent;
+            }
+            
+            .nav-toggle.active .hamburger::before {
+                transform: rotate(45deg);
+                top: 0;
+            }
+            
+            .nav-toggle.active .hamburger::after {
+                transform: rotate(-45deg);
+                top: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .emi-hero-title {
                 font-size: 2rem;
             }
             
-            .main {
-                padding: 6rem 0 2rem;
+            .emi-hero-subtitle {
+                font-size: 1.1rem;
             }
+            
+            .emi-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll to top button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(95, 111, 246, 0.3);
+            border: none;
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            transform: translateY(-3px);
+            background: var(--primary-dark);
+        }
+
+        .scroll-to-top svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
         }
     </style>
 </head>
@@ -351,262 +741,14 @@
     <header class="header">
         <div class="container">
             <a href="/" class="logo">
-                <span class="logo-icon">$</span>
-                <span>FinCalc<span style="color: var(--primary);">Pro</span></span>
+                <span class="logo-icon">Rs</span>
+                <span>FinCalc<span class="logo-highlight">Pro</span></span>
             </a>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main">
-        <div class="container">
-            <h1 class="page-title">EMI Calculator</h1>
-            <p class="page-subtitle">Calculate your Equated Monthly Installments for loans and mortgages</p>
             
-            <div class="calculator-container">
-                <!-- Calculator Form -->
-                <div class="calculator-form">
-                    <div class="form-group">
-                        <label for="loanAmount" class="form-label">Loan Amount (₹)</label>
-                        <input type="number" id="loanAmount" class="form-control" value="1000000" min="1000" step="1000">
-                        <input type="range" id="loanAmountRange" class="range-slider" min="1000" max="5000000" value="1000000" step="1000">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="interestRate" class="form-label">Interest Rate (% p.a.)</label>
-                        <input type="number" id="interestRate" class="form-control" value="8.5" min="1" max="30" step="0.1">
-                        <input type="range" id="interestRateRange" class="range-slider" min="1" max="30" value="8.5" step="0.1">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="loanTenure" class="form-label">Loan Tenure (years)</label>
-                        <input type="number" id="loanTenure" class="form-control" value="20" min="1" max="30" step="1">
-                        <input type="range" id="loanTenureRange" class="range-slider" min="1" max="30" value="20" step="1">
-                    </div>
-                    
-                    <button id="calculateBtn" class="btn btn-primary">Calculate EMI</button>
-                </div>
-                
-                <!-- Results -->
-                <div class="results-container">
-                    <h2 class="result-title">Your EMI Details</h2>
-                    <div class="emi-amount">₹0</div>
-                    
-                    <div class="result-item">
-                        <span class="result-label">Principal Amount</span>
-                        <span class="result-value" id="principalAmount">₹10,00,000</span>
-                    </div>
-                    
-                    <div class="result-item">
-                        <span class="result-label">Total Interest</span>
-                        <span class="result-value" id="totalInterest">₹0</span>
-                    </div>
-                    
-                    <div class="result-item">
-                        <span class="result-label">Total Payment</span>
-                        <span class="result-value" id="totalPayment">₹0</span>
-                    </div>
-                </div>
-                
-                <!-- Chart -->
-                <div class="chart-container">
-                    <h2 class="chart-title">Payment Breakdown</h2>
-                    <canvas id="emiChart"></canvas>
-                </div>
-                
-                <!-- Amortization Table -->
-                <div class="breakdown-container">
-                    <h2 class="breakdown-title">Amortization Schedule</h2>
-                    <div class="table-container">
-                        <table class="breakdown-table">
-                            <thead>
-                                <tr>
-                                    <th>Month</th>
-                                    <th>Payment</th>
-                                    <th>Principal</th>
-                                    <th>Interest</th>
-                                    <th>Balance</th>
-                                </tr>
-                            </thead>
-                            <tbody id="amortizationTable">
-                                <!-- Table will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // DOM Elements
-        const loanAmountInput = document.getElementById('loanAmount');
-        const loanAmountRange = document.getElementById('loanAmountRange');
-        const interestRateInput = document.getElementById('interestRate');
-        const interestRateRange = document.getElementById('interestRateRange');
-        const loanTenureInput = document.getElementById('loanTenure');
-        const loanTenureRange = document.getElementById('loanTenureRange');
-        const calculateBtn = document.getElementById('calculateBtn');
-        const emiAmountDisplay = document.querySelector('.emi-amount');
-        const principalAmountDisplay = document.getElementById('principalAmount');
-        const totalInterestDisplay = document.getElementById('totalInterest');
-        const totalPaymentDisplay = document.getElementById('totalPayment');
-        const amortizationTable = document.getElementById('amortizationTable');
-        let emiChart;
-
-        // Sync range sliders with number inputs
-        function syncInputs(inputElement, rangeElement) {
-            inputElement.addEventListener('input', () => {
-                rangeElement.value = inputElement.value;
-                calculateEMI();
-            });
-            
-            rangeElement.addEventListener('input', () => {
-                inputElement.value = rangeElement.value;
-                calculateEMI();
-            });
-        }
-
-        // Format currency
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('en-IN', {
-                style: 'currency',
-                currency: 'INR',
-                maximumFractionDigits: 0
-            }).format(amount);
-        }
-
-        // Calculate EMI
-        function calculateEMI() {
-            const principal = parseFloat(loanAmountInput.value);
-            const interestRate = parseFloat(interestRateInput.value) / 100 / 12;
-            const tenureMonths = parseFloat(loanTenureInput.value) * 12;
-            
-            // EMI calculation formula
-            const emi = principal * interestRate * 
-                       Math.pow(1 + interestRate, tenureMonths) / 
-                       (Math.pow(1 + interestRate, tenureMonths) - 1);
-            
-            const totalPayment = emi * tenureMonths;
-            const totalInterest = totalPayment - principal;
-            
-            // Update displays
-            emiAmountDisplay.textContent = formatCurrency(emi);
-            principalAmountDisplay.textContent = formatCurrency(principal);
-            totalInterestDisplay.textContent = formatCurrency(totalInterest);
-            totalPaymentDisplay.textContent = formatCurrency(totalPayment);
-            
-            // Update chart and amortization table
-            updateChart(principal, totalInterest);
-            updateAmortizationTable(principal, interestRate, tenureMonths, emi);
-        }
-
-        // Update chart
-        function updateChart(principal, totalInterest) {
-            const ctx = document.getElementById('emiChart').getContext('2d');
-            
-            if (emiChart) {
-                emiChart.destroy();
-            }
-            
-            emiChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Principal Amount', 'Total Interest'],
-                    datasets: [{
-                        data: [principal, totalInterest],
-                        backgroundColor: [
-                            'rgba(95, 111, 246, 0.8)',
-                            'rgba(255, 126, 51, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(95, 111, 246, 1)',
-                            'rgba(255, 126, 51, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + formatCurrency(context.raw);
-                                }
-                            }
-                        }
-                    },
-                    animation: {
-                        animateScale: true,
-                        animateRotate: true
-                    }
-                }
-            });
-        }
-
-        // Update amortization table
-        function updateAmortizationTable(principal, monthlyRate, tenureMonths, emi) {
-            let balance = principal;
-            let tableHTML = '';
-            
-            // Show first 6 months and last 6 months
-            const monthsToShow = 6;
-            
-            for (let month = 1; month <= tenureMonths; month++) {
-                const interest = balance * monthlyRate;
-                const principalPayment = emi - interest;
-                balance -= principalPayment;
-                
-                // Show first few months, last few months, and current month if in between
-                if (month <= monthsToShow || month > tenureMonths - monthsToShow || 
-                    (month > monthsToShow && month <= tenureMonths - monthsToShow && month % 12 === 0)) {
-                    
-                    tableHTML += `
-                        <tr>
-                            <td>${month}</td>
-                            <td>${formatCurrency(emi)}</td>
-                            <td>${formatCurrency(principalPayment)}</td>
-                            <td>${formatCurrency(interest)}</td>
-                            <td>${balance > 0 ? formatCurrency(balance) : '₹0'}</td>
-                        </tr>
-                    `;
-                    
-                    // Add ellipsis if skipping months
-                    if (month === monthsToShow && tenureMonths > monthsToShow * 2) {
-                        tableHTML += `
-                            <tr>
-                                <td colspan="5" style="text-align: center;">...</td>
-                            </tr>
-                        `;
-                    }
-                }
-            }
-            
-            amortizationTable.innerHTML = tableHTML;
-        }
-
-        // Initialize
-        function init() {
-            // Sync inputs
-            syncInputs(loanAmountInput, loanAmountRange);
-            syncInputs(interestRateInput, interestRateRange);
-            syncInputs(loanTenureInput, loanTenureRange);
-            
-            // Calculate on button click
-            calculateBtn.addEventListener('click', calculateEMI);
-            
-            // Calculate on page load
-            calculateEMI();
-        }
-
-        // Run when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-</html>
+            <nav class="nav">
+                <ul class="nav-menu">
+                    <li><a href="/emi-calculator" class="nav-link active">EMI Calculator</a></li>
+                    <li><a href="/sip-calculator" class="nav-link">SIP Calculator</a></li>
+                    <li><a href="/vat-calculator" class="nav-link">VAT Calculator</a></li>
+                    <li><a href="/percentage-calculator" class="nav-link">Percentage Tool</a></li>
+ 

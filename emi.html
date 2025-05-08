@@ -704,6 +704,105 @@
         fill: var(--primary);
     }
 
+    /* Footer Styles */
+    .footer {
+        background: var(--bg-dark);
+        padding: 4rem 0 0;
+        color: var(--text-light);
+    }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .footer-about {
+        max-width: 300px;
+    }
+
+    .footer-title {
+        color: white;
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .footer-title::after {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        margin-top: 0.5rem;
+        border-radius: 2px;
+    }
+
+    .footer-about-text {
+        margin-bottom: 1.5rem;
+    }
+
+    .footer-social {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-link {
+        width: 40px;
+        height: 40px;
+        background: var(--text-lighter);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .social-link:hover {
+        background: var(--primary);
+        transform: translateY(-2px);
+    }
+
+    .social-link svg {
+        width: 20px;
+        height: 20px;
+        fill: white;
+    }
+
+    .footer-menu {
+        list-style: none;
+    }
+
+    .footer-link {
+        display: block;
+        padding: 0.5rem 0;
+        color: var(--text-light);
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .footer-link:hover {
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .footer-bottom {
+        border-top: 1px solid var(--border);
+        padding: 1.5rem 0;
+        text-align: center;
+    }
+
+    .copyright, .creator {
+        font-size: 0.875rem;
+        color: var(--text-lighter);
+    }
+
+    .creator {
+        margin-top: 0.5rem;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
         .nav-menu {
@@ -761,6 +860,11 @@
         
         .results-summary {
             grid-template-columns: 1fr;
+        }
+        
+        .footer-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
         }
     }
 
